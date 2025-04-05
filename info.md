@@ -14,3 +14,11 @@ def get_type(schema: dict):
         return "boolean"
     if "const" in schema:
 ```
+
+docker run --rm \
+ -d -p 8080:8080 \
+ -v "${PWD}/searxng:/etc/searxng" \
+ -e "BASE_URL=http://localhost:8080/" \
+ -e "INSTANCE_NAME=my-instance" \
+ -e "UWSGI_WORKERS=8" \
+ searxng/searxng

@@ -130,7 +130,8 @@ def answer_single_question(example, model, answers_file, action_type, search_mod
                     model_name=search_model_id or model.model_id,
                     search_provider='searxng',
                     # serper_api_key=args.serper_api_key,
-                    searxng_instance_url='https://searxng.getlockinapp.com/',
+                    # searxng_instance_url='https://searxng.getlockinapp.com/',
+                    searxng_instance_url='http://localhost:8080/',
                     # searxng_api_key=args.searxng_api_key
                 )
             ],
@@ -145,7 +146,8 @@ def answer_single_question(example, model, answers_file, action_type, search_mod
                     model_name=search_model_id or model.model_id,
                     search_provider='searxng',
                     # serper_api_key=args.serper_api_key,
-                    searxng_instance_url='https://searxng.getlockinapp.com/',
+                    # searxng_instance_url='https://searxng.getlockinapp.com/',
+                    searxng_instance_url='http://localhost:8080/',
                     # searxng_api_key=args.searxng_api_key
                 ), PythonInterpreterTool()
             ],
