@@ -1,16 +1,8 @@
 import torch
 import requests
 import json
-import os
 from typing import List
 from opendeepsearch.ranking_models.base_reranker import BaseSemanticSearcher
-from dotenv import load_dotenv
-
-load_dotenv()
-headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + os.getenv('RUNPOD_API_KEY')
-}
 
 class InfinitySemanticSearcher(BaseSemanticSearcher):
     """
@@ -49,10 +41,8 @@ class InfinitySemanticSearcher(BaseSemanticSearcher):
     
     def __init__(
         self, 
-        # embedding_endpoint: str = "http://localhost:7997/embeddings",
-        embedding_endpoint: str = "https://api.runpod.ai/v2/b7zng7mfxqps9o/run",
-        # model_name: str = "Alibaba-NLP/gte-Qwen2-7B-instruct",
-        model_name: str = "Qwen/Qwen2.5-Omni-7B",
+        embedding_endpoint: str = "http://localhost:7997/embeddings",
+        model_name: str = "Alibaba-NLP/gte-Qwen2-7B-instruct",
         instruction_prefix: str = "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: "
     ):
         """
@@ -86,7 +76,7 @@ class InfinitySemanticSearcher(BaseSemanticSearcher):
         response = requests.post(
             self.embedding_endpoint,
             json={
-                # "model": self.model_name,
+                "model": self.model_name,
                 "input": formatted_texts
             }
         )

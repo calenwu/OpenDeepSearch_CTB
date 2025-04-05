@@ -61,3 +61,7 @@ docker run -it --gpus all \
  --model-id mixedbread-ai/mxbai-rerank-xsmall-v1 \
  --model-id michaelfeil/bge-small-en-v1.5 \
  --port 7997
+
+python ./evals/eval_tasks.py --parallel-workers=32 --num-trials=1 --eval-tasks=./evals/datasets/frames_test_set.csv
+
+python evals/autograde_df.py --num_cpus 25 /Users/georgye/Documents/repos/OpenDeepSearch_CTB/output/fireworks_ai_accountsfireworksmodelsllama-v3p3-70b-instruct/codeact/frames_test_set/fireworks_aiaccountsfireworksmodelsllama-v3p3-70b-instructcodeactframes_test_set_trial0.jsonl
