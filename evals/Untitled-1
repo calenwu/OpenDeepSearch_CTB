@@ -1,0 +1,2 @@
+python evals/autograde_df.py --num_cpus 12 ./OpenDeepSearch_CTB/output/fireworks_ai__accounts__fireworks__models__qwq-32b/codeact/frames_test_set/fireworks_ai__accounts__fireworks__models__qwq-32b__codeact__frames_test_set__trial0.jsonl
+python evals/autograde_df.py --num_cpus 12 /Users/georgye/Documents/repos/OpenDeepSearch_CTB/output/fireworks_ai__accounts__fireworks__models__qwq-32b/codeact/frames_test_set/fireworks_ai__accounts__fireworks__models__qwq-32b__codeact__frames_test_set__trial0.jsonl

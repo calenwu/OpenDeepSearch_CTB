@@ -130,8 +130,7 @@ def answer_single_question(example, model, answers_file, action_type, search_mod
                     model_name=search_model_id or model.model_id,
                     search_provider='searxng',
                     # serper_api_key=args.serper_api_key,
-                    # searxng_instance_url='https://searxng.getlockinapp.com/',
-                    searxng_instance_url='http://localhost:8080/',
+                    searxng_instance_url='https://searxng.getlockinapp.com/',
                     # searxng_api_key=args.searxng_api_key
                 )
             ],
@@ -146,8 +145,7 @@ def answer_single_question(example, model, answers_file, action_type, search_mod
                     model_name=search_model_id or model.model_id,
                     search_provider='searxng',
                     # serper_api_key=args.serper_api_key,
-                    # searxng_instance_url='https://searxng.getlockinapp.com/',
-                    searxng_instance_url='http://localhost:8080/',
+                    searxng_instance_url='https://searxng.getlockinapp.com/',
                     # searxng_api_key=args.searxng_api_key
                 ), PythonInterpreterTool()
             ],
@@ -245,7 +243,7 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     eval_ds = load_eval_dataset(args.eval_tasks)
-
+    print("args.model_id", args.model_id)
     if args.model_type == "LiteLLMModel":
         model = LiteLLMModel(
             args.model_id,
