@@ -21,6 +21,7 @@ class JinaReranker(BaseSemanticSearcher):
         if api_key is None:
             load_dotenv()
             api_key = os.getenv('JINA_API_KEY')
+            print("🔍 DEBUG: JINA_API_KEY =", api_key)
             if not api_key:
                 raise ValueError("No API key provided and JINA_API_KEY not found in environment variables")
         
