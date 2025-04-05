@@ -41,7 +41,7 @@ class InfinitySemanticSearcher(BaseSemanticSearcher):
     
     def __init__(
         self, 
-        embedding_endpoint: str = "https://infinity.getlockinapp.com/",
+        embedding_endpoint: str = "http://localhost:7997/embeddings",
         model_name: str = "Alibaba-NLP/gte-Qwen2-7B-instruct",
         instruction_prefix: str = "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: "
     ):

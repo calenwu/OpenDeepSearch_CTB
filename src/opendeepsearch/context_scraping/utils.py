@@ -98,7 +98,6 @@ def predict_educational_value(text_list: List[str]) -> List[float]:
     Predict educational value scores for a list of texts.
     Returns a list of scores between 0 and 2.
     """
-    print("BRO IS THIS CALLED OR NOT")
     text_list = [replace_newlines(text) for text in text_list]
     pred = model.predict(text_list, k=-1)
     score_list = []

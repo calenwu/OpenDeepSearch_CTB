@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: eval_tasks",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/evals/eval_tasks.py",
+            "args": [
+                "--parallel-workers=1",
+                "--num-trials=1",
+                "--eval-tasks=./evals/datasets/test.csvite"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}
