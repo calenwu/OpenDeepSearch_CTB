@@ -125,14 +125,30 @@ def answer_single_question(example, model, answers_file, action_type, search_mod
         agent = model
     elif action_type == "codeact":
         agent = CodeAgent(
-            tools=[OpenDeepSearchTool(model_name=search_model_id or model.model_id)],
+            tools=[
+                OpenDeepSearchTool(
+                    model_name=search_model_id or model.model_id,
+                    search_provider='searxng',
+                    # serper_api_key=args.serper_api_key,
+                    searxng_instance_url='https://searxng.getlockinapp.com/',
+                    # searxng_api_key=args.searxng_api_key
+                )
+            ],
             model=model,
             additional_authorized_imports=["numpy"],
             max_steps=15,
         )
     elif action_type == "tool-calling":
         agent = ToolCallingAgent(
-            tools=[OpenDeepSearchTool(model_name=search_model_id or model.model_id), PythonInterpreterTool()],
+            tools=[
+                OpenDeepSearchTool(
+                    model_name=search_model_id or model.model_id,
+                    search_provider='searxng',
+                    # serper_api_key=args.serper_api_key,
+                    searxng_instance_url='https://searxng.getlockinapp.com/',
+                    # searxng_api_key=args.searxng_api_key
+                ), PythonInterpreterTool()
+            ],
             model=model,
             additional_authorized_imports=["numpy"],
             max_steps=15,

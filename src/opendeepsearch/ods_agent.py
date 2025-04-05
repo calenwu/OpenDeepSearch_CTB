@@ -105,6 +105,7 @@ class OpenDeepSearchAgent:
         """
         # Get sources from SERP
         sources = self.serp_search.get_sources(query)
+        print("🔍 DEBUG: sources =", sources)
 
         # Process sources
         processed_sources = await self.source_processor.process_sources(

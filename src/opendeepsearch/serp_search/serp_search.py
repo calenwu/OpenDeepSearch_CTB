@@ -149,11 +149,14 @@ class SerperAPI(SearchAPI):
                 'relatedSearches': data.get('relatedSearches')
             }
 
+            print("🔍 DEBUG: Serper results =", results)
             return SearchResult(data=results)
 
         except requests.RequestException as e:
+            print("🔍 DEBUG: Serper API request failed: {str(e)}")
             return SearchResult(error=f"API request failed: {str(e)}")
         except Exception as e:
+            print("🔍 DEBUG: Serper unexpected error: {str(e)}")
             return SearchResult(error=f"Unexpected error: {str(e)}")
 
 
@@ -252,12 +255,14 @@ class SearXNGAPI(SearchAPI):
                 'peopleAlsoAsk': None,
                 'relatedSearches': data.get('suggestions', [])
             }
-
+            print("🔍 DEBUG: SearXNG results =", results)
             return SearchResult(data=results)
 
         except requests.RequestException as e:
+            print(f"🔍 DEBUG: SearXNG API request failed: {str(e)}")
             return SearchResult(error=f"SearXNG API request failed: {str(e)}")
         except Exception as e:
+            print(f"🔍 DEBUG: SearXNG unexpected error: {str(e)}")
             return SearchResult(error=f"Unexpected error with SearXNG: {str(e)}")
 
 
@@ -283,8 +288,10 @@ def create_search_api(
         ValueError: If an invalid search provider is specified
     """
     if search_provider.lower() == "serper":
+        print("🔍 DEBUG: WRONG API key =", serper_api_key)
         return SerperAPI(api_key=serper_api_key)
     elif search_provider.lower() == "searxng":
+        print("🔍 DEBUG: SearXNG instance URL =", searxng_instance_url)
         return SearXNGAPI(instance_url=searxng_instance_url, api_key=searxng_api_key)
     else:
         raise ValueError(f"Invalid search provider: {search_provider}. Must be 'serper' or 'searxng'")

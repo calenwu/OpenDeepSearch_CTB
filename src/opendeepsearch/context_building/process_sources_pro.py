@@ -47,7 +47,6 @@ class SourceProcessor:
             valid_sources = self._get_valid_sources(sources, num_elements)
             if not valid_sources:
                 return sources
-
             if not pro_mode:
                 # Check if there's a Wikipedia article among valid sources
                 wiki_sources = [(i, source) for i, source in valid_sources 
@@ -56,7 +55,6 @@ class SourceProcessor:
                     return sources.data
                 # If Wikipedia article exists, only process that
                 valid_sources = wiki_sources[:1]  # Take only the first Wikipedia source
-
             html_contents = await self._fetch_html_contents([s[1]['link'] for s in valid_sources])
             return self._update_sources_with_content(sources.data, valid_sources, html_contents, query)
         except Exception as e:

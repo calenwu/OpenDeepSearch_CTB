@@ -13,9 +13,10 @@ LLAMA_3_3 = 'fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct'
 # Load environment variables
 load_dotenv()
 
-print("🔍 DEBUG: LITELLM_SEARCH_MODEL_ID =", os.getenv("LITELLM_SEARCH_MODEL_ID"))
-print("🔍 DEBUG: LITELLM_ORCHESTRATOR_MODEL_ID =", os.getenv("LITELLM_ORCHESTRATOR_MODEL_ID"))
-print("🔍 DEBUG: SERPER_API_KEY =", os.getenv("SERPER_API_KEY"))
+# print("🔍 DEBUG: LITELLM_SEARCH_MODEL_ID =", os.getenv("LITELLM_SEARCH_MODEL_ID"))
+# print("🔍 DEBUG: LITELLM_ORCHESTRATOR_MODEL_ID =", os.getenv("LITELLM_ORCHESTRATOR_MODEL_ID"))
+# print("🔍 DEBUG: SERPER_API_KEY =", os.getenv("SERPER_API_KEY"))
+# print("🔍 DEBUG: SEARXNG_INSTANCE_URL =", os.getenv("SEARXNG_INSTANCE_URL"))
 
 # Add command line argument parsing
 parser = argparse.ArgumentParser(description='Run the Gradio demo with custom models')
@@ -31,10 +32,11 @@ parser.add_argument('--reranker',
     help='Reranker to use (jina or infinity)')
 parser.add_argument('--search-provider',
     choices=['serper', 'searxng'],
-    default='serper',
+    default='searxng',
     help='Search provider to use (serper or searxng)')
 parser.add_argument('--searxng-instance',
-    help='SearXNG instance URL (required if search-provider is searxng)')
+    help='SearXNG instance URL (required if search-provider is searxng)',
+    default=os.getenv("SEARXNG_INSTANCE_URL"))
 parser.add_argument('--searxng-api-key',
     help='SearXNG API key (optional)')
 parser.add_argument('--serper-api-key',
@@ -67,8 +69,13 @@ search_tool = OpenDeepSearchTool(
     searxng_api_key=args.searxng_api_key
 )
 print("LLAMA_3_3 =", LLAMA_3_3)
-print('args.orchestrator_model')
-print(args.orchestrator_model)
+print('args.orchestrator_model', args.orchestrator_model)
+print('args.search_provider', args.search_provider)
+print('args.searxng_instance', args.searxng_instance)
+print('args.searxng_api_key', args.searxng_api_key)
+print('args.serper_api_key', args.serper_api_key)
+print('args.openai_base_url', args.openai_base_url)
+print('args.server_port', args.server_port)
 model = LiteLLMModel(
     model_id=LLAMA_3_3,
     temperature=0.2,
