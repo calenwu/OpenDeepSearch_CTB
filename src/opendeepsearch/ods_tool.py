@@ -17,7 +17,7 @@ class OpenDeepSearchTool(Tool):
     def __init__(
         self,
         model_name: Optional[str] = None,
-        reranker: str = "infinity",
+        reranker: str = "jina",
         search_provider: Literal["serper", "searxng"] = "serper",
         serper_api_key: Optional[str] = None,
         searxng_instance_url: Optional[str] = None,
