@@ -61,7 +61,7 @@ def parse_arguments():
     parser.add_argument(
         "--model-id",
         type=str,
-        default="fireworks_ai/accounts/fireworks/models/qwq-32b",
+        default="fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct",
         help="The model ID to use for the specified model type",
     )
     parser.add_argument(
