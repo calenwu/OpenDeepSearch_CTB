@@ -14,7 +14,7 @@ python -m evals.autograde_df --csv_path <path_to_csv> --output_path <path_to_out
 Example:
 
 ```bash
-python evals/autograde_df.py output/fireworks_ai__accounts__fireworks__models__qwq-32b/codeact/simple_qa_test_set/fireworks_ai__accounts__fireworks__models__qwq-32b__codeact__simple_qa_test_set__trial1.jsonl
+python evals/autograde_df.py --num_cpus 12 /Users/owen/Projects/datathon25/OpenDeepSearch_CTB/output/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct/codeact/frames_test_set/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct__codeact__frames_test_set__trial0.jsonl
 ```
 
 This command processes the specified JSONL file and performs automated grading on DataFrame outputs.
