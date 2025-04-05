@@ -8,7 +8,7 @@ This repository contains scripts for running evaluations and autograding on mode
 To evaluate and autograde DataFrame outputs:
 
 ```bash
-python -m evals.autograde_dataframe --csv_path <path_to_csv> --output_path <path_to_output_csv>
+python -m evals.autograde_df --csv_path <path_to_csv> --output_path <path_to_output_csv>
 ```
 
 Example:
