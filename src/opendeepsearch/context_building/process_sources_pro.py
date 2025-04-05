@@ -17,8 +17,10 @@ class SourceProcessor:
         top_results: int = 5,
         strategies: List[str] = ["no_extraction"],
         filter_content: bool = True,
-        reranker: str = "infinity"
+        reranker: str = "jina"
+        # reranker: str = "infinity"
     ):
+        reranker: str = "jina"
         self.strategies = strategies
         self.filter_content = filter_content
         self.scraper = WebScraper(
@@ -31,10 +33,8 @@ class SourceProcessor:
         # Initialize the appropriate reranker
         if reranker.lower() == "jina":
             self.semantic_searcher = JinaReranker()
-            print("Using Jina Reranker")
         else:  # default to infinity
             self.semantic_searcher = InfinitySemanticSearcher()
-            print("Using Infinity Reranker")
 
     async def process_sources(
         self, 

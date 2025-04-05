@@ -61,7 +61,7 @@ def parse_arguments():
     parser.add_argument(
         "--model-id",
         type=str,
-        default="fireworks_ai/accounts/fireworks/models/qwq-32b",
+        default="fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct",
         help="The model ID to use for the specified model type",
     )
     parser.add_argument(
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     eval_ds = load_eval_dataset(args.eval_tasks)
-
+    print("args.model_id", args.model_id)
     if args.model_type == "LiteLLMModel":
         model = LiteLLMModel(
             args.model_id,
