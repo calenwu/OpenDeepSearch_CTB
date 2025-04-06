@@ -1,7 +1,7 @@
 from smolagents import CodeAgent, GradioUI, LiteLLMModel
-from opendeepsearch import OpenDeepSearchTool
+from opendeepsearch import OpenDeepSearchTool, EnhancedOpenDeepSearchTool
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 import argparse
 
 
@@ -12,7 +12,8 @@ LLAMA_3_3 = 'fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct'
 # LLAMA_3_3 = 'accounts/fireworks/models/llama-v3p3-70b-instruct'
 # Load environment variables
 load_dotenv()
-
+print(dotenv_values(".env"))
+print(os.getenv("SEARXNG_INSTANCE_URL"))
 # print("🔍 DEBUG: LITELLM_SEARCH_MODEL_ID =", os.getenv("LITELLM_SEARCH_MODEL_ID"))
 # print("🔍 DEBUG: LITELLM_ORCHESTRATOR_MODEL_ID =", os.getenv("LITELLM_ORCHESTRATOR_MODEL_ID"))
 # print("🔍 DEBUG: SERPER_API_KEY =", os.getenv("SERPER_API_KEY"))
@@ -21,10 +22,10 @@ load_dotenv()
 # Add command line argument parsing
 parser = argparse.ArgumentParser(description='Run the Gradio demo with custom models')
 parser.add_argument('--model-name',
-    default=os.getenv("LITELLM_SEARCH_MODEL_ID", QWEN_2_5_32B),
+    default=os.getenv("LITELLM_SEARCH_MODEL_ID", LLAMA_3_3),
     help='Model name for search')
 parser.add_argument('--orchestrator-model',
-    default=os.getenv("LITELLM_ORCHESTRATOR_MODEL_ID", QWEN_2_5_32B),
+    default=os.getenv("LITELLM_ORCHESTRATOR_MODEL_ID", LLAMA_3_3),
     help='Model name for orchestration')
 parser.add_argument('--reranker',
     choices=['jina', 'infinity'],
@@ -60,12 +61,12 @@ if args.openai_base_url:
     os.environ["OPENAI_BASE_URL"] = args.openai_base_url
 
 # Use the command line arguments
-search_tool = OpenDeepSearchTool(
+search_tool = EnhancedOpenDeepSearchTool(
     model_name=LLAMA_3_3,
     reranker=args.reranker,
     search_provider=args.search_provider,
     serper_api_key=args.serper_api_key,
-    searxng_instance_url=args.searxng_instance,
+    searxng_instance_url='https://searxng.getlockinapp.com',
     searxng_api_key=args.searxng_api_key
 )
 print("LLAMA_3_3 =", LLAMA_3_3)

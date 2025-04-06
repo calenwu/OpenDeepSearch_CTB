@@ -18,9 +18,7 @@ class SourceProcessor:
         strategies: List[str] = ["no_extraction"],
         filter_content: bool = True,
         reranker: str = "jina"
-        # reranker: str = "infinity"
     ):
-        reranker: str = "jina"
         self.strategies = strategies
         self.filter_content = filter_content
         self.scraper = WebScraper(
