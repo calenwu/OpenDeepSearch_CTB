@@ -46,6 +46,16 @@ def extract_answer_box(
     
     return results
 
+def extract_graph(graph: Optional[Dict]) -> List[str]:
+    results = []
+
+    if graph:
+        results.append(str(graph))
+
+    return results
+
+
+
 def build_context(
     sources_result: Dict,
 ) -> str:
@@ -65,6 +75,7 @@ def build_context(
         answer_box = extract_answer_box(
             sources_result.get('answerBox')
         )
+        # graph = extract_graph(sources_result.get('graph'))
         
         # Combine all results into a single string
         context_parts = []
@@ -85,6 +96,11 @@ def build_context(
         if top_stories:
             context_parts.append("TOP STORIES:")
             context_parts.extend(top_stories)
+        #     context_parts.append("")
+
+        # if graph:
+        #     context_parts.append("GRAPH:")
+        #     context_parts.extend(graph)
         
         # Join all parts with newlines
         return "\n".join(context_parts)
