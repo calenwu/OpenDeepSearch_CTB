@@ -72,4 +72,7 @@ class ReasoningAgent:
 Reasoning Plan:
 {plan}
 
-Please follow this plan to answer the question. Use the plan as a guide for your approach, but feel free to adapt if you discover new information that requires a different approach.""" 
+Please follow this exact plan step by step to answer the question, while using web_search to confirm the information you need specified by the step. Use the plan as a guide for your approach, but feel free to adapt if you discover new information that requires a different approach.
+
+Make sure to output the final answer in pure string format, without formatting or markdown.
+""" 

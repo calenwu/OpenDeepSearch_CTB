@@ -142,6 +142,7 @@ class OpenDeepSearchAgent:
         # Get context from search results
         context = await self.search_and_build_context(query, max_sources, pro_mode)
         # Prepare messages for the LLM
+        # context += "\nADDITIONAL INSTRUCTION:\nDo not forget to adhere to the wanted format, the resulting answer should exactly corresponding to the format that was wanted in the exercise description."
         messages = [
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"}
