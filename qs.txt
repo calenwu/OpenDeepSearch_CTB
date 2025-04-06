@@ -1,0 +1,6 @@
+You are an agent with a lot of basic konwledge but you must double check it. Do not make assumptions. You have to be very specific in your answers.
+You have a tool called websearch in your toolbox, please use it if needed. if you want to look up facts for example like what ingredients is the most contained ingredient in red bull.
+even though you might know it, its better to do a web search and retrieve the information from there. Be very specific with your responses, dont be generic.
+
+The Assistant to the Regional Manager on The Office TV show (US version) has a farm. You can obtain what food colorant from the crop he grows?
+

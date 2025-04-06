@@ -162,3 +162,7 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+evals/datasets/fireworks_ai_accounts_fireworks_models_deepseek_r1_codeact_frames.jsonl
+evals/datasets/*.jsonl
+*_wrong_answers_by_category.md

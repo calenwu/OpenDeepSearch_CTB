@@ -1,40 +1,55 @@
 from smolagents import CodeAgent, GradioUI, LiteLLMModel
-from opendeepsearch import OpenDeepSearchTool
+from opendeepsearch import OpenDeepSearchTool, EnhancedOpenDeepSearchTool
+from smolagents.agents import PromptTemplates 
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 import argparse
 
+
+QWEN_2_5_32B = 'fireworks_ai/accounts/fireworks/models/qwen2p5-32b'
+LLAMA_3_3 = 'fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct'
+# LLAMA_3_3 = 'fireworks_ai/llama-v3p1-70b-instruct'
+# QWEN_2_5_32B = 'accounts/fireworks/models/qwen2p5-32b'
+# LLAMA_3_3 = 'accounts/fireworks/models/llama-v3p3-70b-instruct'
 # Load environment variables
 load_dotenv()
+print(dotenv_values(".env"))
+print(os.getenv("SEARXNG_INSTANCE_URL"))
+# print("🔍 DEBUG: LITELLM_SEARCH_MODEL_ID =", os.getenv("LITELLM_SEARCH_MODEL_ID"))
+# print("🔍 DEBUG: LITELLM_ORCHESTRATOR_MODEL_ID =", os.getenv("LITELLM_ORCHESTRATOR_MODEL_ID"))
+# print("🔍 DEBUG: SERPER_API_KEY =", os.getenv("SERPER_API_KEY"))
+# print("🔍 DEBUG: SEARXNG_INSTANCE_URL =", os.getenv("SEARXNG_INSTANCE_URL"))
 
 # Add command line argument parsing
 parser = argparse.ArgumentParser(description='Run the Gradio demo with custom models')
 parser.add_argument('--model-name',
-                   default=os.getenv("LITELLM_SEARCH_MODEL_ID", os.getenv("LITELLM_MODEL_ID", "openrouter/google/gemini-2.0-flash-001")),
-                   help='Model name for search')
+    default=os.getenv("LITELLM_SEARCH_MODEL_ID", LLAMA_3_3),
+    help='Model name for search')
 parser.add_argument('--orchestrator-model',
-                   default=os.getenv("LITELLM_ORCHESTRATOR_MODEL_ID", os.getenv("LITELLM_MODEL_ID", "openrouter/google/gemini-2.0-flash-001")),
-                   help='Model name for orchestration')
+    default=os.getenv("LITELLM_ORCHESTRATOR_MODEL_ID", LLAMA_3_3),
+    help='Model name for orchestration')
 parser.add_argument('--reranker',
-                   choices=['jina', 'infinity'],
-                   default='jina',
-                   help='Reranker to use (jina or infinity)')
+    choices=['jina', 'infinity'],
+    default='jina',
+    help='Reranker to use (jina or infinity)')
 parser.add_argument('--search-provider',
-                   choices=['serper', 'searxng'],
-                   default='serper',
-                   help='Search provider to use (serper or searxng)')
+    choices=['serper', 'searxng'],
+    default='searxng',
+    help='Search provider to use (serper or searxng)')
 parser.add_argument('--searxng-instance',
-                   help='SearXNG instance URL (required if search-provider is searxng)')
+    help='SearXNG instance URL (required if search-provider is searxng)',
+    default=os.getenv("SEARXNG_INSTANCE_URL"))
 parser.add_argument('--searxng-api-key',
-                   help='SearXNG API key (optional)')
+    help='SearXNG API key (optional)')
 parser.add_argument('--serper-api-key',
-                   help='Serper API key (optional, will use SERPER_API_KEY env var if not provided)')
+    help='Serper API key (optional, will use SERPER_API_KEY env var if not provided)',
+    default=os.getenv("SERPER_API_KEY"))
 parser.add_argument('--openai-base-url',
-                   help='OpenAI API base URL (optional, will use OPENAI_BASE_URL env var if not provided)')
+    help='OpenAI API base URL (optional, will use OPENAI_BASE_URL env var if not provided)')
 parser.add_argument('--server-port',
-                   type=int,
-                   default=7860,
-                   help='Port to run the Gradio server on')
+    type=int,
+    default=7860,
+    help='Port to run the Gradio server on')
 
 args = parser.parse_args()
 
@@ -47,21 +62,43 @@ if args.openai_base_url:
     os.environ["OPENAI_BASE_URL"] = args.openai_base_url
 
 # Use the command line arguments
-search_tool = OpenDeepSearchTool(
-    model_name=args.model_name,
+search_tool = EnhancedOpenDeepSearchTool(
+    model_name=LLAMA_3_3,
     reranker=args.reranker,
     search_provider=args.search_provider,
     serper_api_key=args.serper_api_key,
-    searxng_instance_url=args.searxng_instance,
+    searxng_instance_url='http://46.101.221.72:8080',
     searxng_api_key=args.searxng_api_key
 )
+print("LLAMA_3_3 =", LLAMA_3_3)
+print('args.orchestrator_model', args.orchestrator_model)
+print('args.search_provider', args.search_provider)
+print('args.searxng_instance', args.searxng_instance)
+print('args.searxng_api_key', args.searxng_api_key)
+print('args.serper_api_key', args.serper_api_key)
+print('args.openai_base_url', args.openai_base_url)
+print('args.server_port', args.server_port)
 model = LiteLLMModel(
-    model_id=args.orchestrator_model,
+    model_id=LLAMA_3_3,
     temperature=0.2,
 )
 
 # Initialize the agent with the search tool
-agent = CodeAgent(tools=[search_tool], model=model)
+custom_prompt = PromptTemplates(
+    system_prompt="""
+You are an agent with a lot of basic knowledge, but you must double-check it. Do not make assumptions.
+You have to be very specific in your answers.
 
+You have a tool called `websearch` in your toolbox — please use it if needed. For example, if asked about the most common ingredient in Red Bull, do a web search and retrieve the exact information from the web.
+
+Even if you think you know the answer, it's better to double-check. Be specific and avoid being generic.
+"""
+)
+
+agent = CodeAgent(
+    tools=[search_tool],
+    model=model,
+    # prompt_templates=custom_prompt
+)
 # Add a name when initializing GradioUI
 GradioUI(agent).launch(server_name="127.0.0.1", server_port=args.server_port, share=False)

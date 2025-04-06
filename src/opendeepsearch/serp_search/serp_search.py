@@ -148,7 +148,6 @@ class SerperAPI(SearchAPI):
                 'peopleAlsoAsk': data.get('peopleAlsoAsk'),
                 'relatedSearches': data.get('relatedSearches')
             }
-
             return SearchResult(data=results)
 
         except requests.RequestException as e:
@@ -252,12 +251,13 @@ class SearXNGAPI(SearchAPI):
                 'peopleAlsoAsk': None,
                 'relatedSearches': data.get('suggestions', [])
             }
-
             return SearchResult(data=results)
 
         except requests.RequestException as e:
+            print(f"🔍 DEBUG: SearXNG API request failed: {str(e)}")
             return SearchResult(error=f"SearXNG API request failed: {str(e)}")
         except Exception as e:
+            print(f"🔍 DEBUG: SearXNG unexpected error: {str(e)}")
             return SearchResult(error=f"Unexpected error with SearXNG: {str(e)}")
 
 
