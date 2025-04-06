@@ -64,8 +64,7 @@ class SourceProcessor:
 
     async def _fetch_html_contents(self, links: List[str]) -> List[str]:
         raw_contents = await self.scraper.scrape_many(links)
-        print(raw_contents, "RAWWWWW")
-        return [x['fit_markdown_llm'].content for x in raw_contents.values()]
+        return [x['markdown_llm'].content for x in raw_contents.values()]
 
     def _process_html_content(self, html: str, query: str) -> str:
         if not html:
