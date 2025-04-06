@@ -54,10 +54,6 @@ class EnhancedOpenDeepSearchTool(Tool):
     name = OpenDeepSearchTool.name
     description = OpenDeepSearchTool.description
     inputs = {
-        "original_question": {
-            "type": "string",
-            "description": "Enter the full actual original question which was asked in the very beginning of the user prompt",
-        },
         "query": {
             "type": "string",
             "description": "The search query to perform",
@@ -82,11 +78,10 @@ class EnhancedOpenDeepSearchTool(Tool):
         self.searxng_instance_url = searxng_instance_url
         self.searxng_api_key = searxng_api_key
 
-    def forward(self, original_question: str, query: str):
+    def forward(self, query: str):
         max_retries = 3
         retries = 0
         # Preserve the full original question for use in every iteration.
-        full_original_question = original_question
         
         while retries < max_retries:
             # Perform the search using the improved query.
