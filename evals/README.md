@@ -7,14 +7,11 @@ This repository contains scripts for running evaluations and autograding on mode
 ### Autograde DataFrame Evaluation
 To evaluate and autograde DataFrame outputs:
 
-```bash
-python -m evals.autograde_df --csv_path <path_to_csv> --output_path <path_to_output_csv>
-```
 
 Example:
 
 ```bash
-python evals/autograde_df.py --num_cpus 12 /Users/owen/Projects/datathon25/OpenDeepSearch_CTB/output/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct/codeact/frames_test_set/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct__codeact__frames_test_set__trial0.jsonl
+python evals/autograde_df.py --num_cpus 12 <path to jsonl>
 ```
 
 This command processes the specified JSONL file and performs automated grading on DataFrame outputs.

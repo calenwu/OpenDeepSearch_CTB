@@ -13,6 +13,8 @@ from datasets import Dataset
 from dotenv import load_dotenv
 from tqdm import tqdm
 from opendeepsearch import OpenDeepSearchTool
+from opendeepsearch.reasoning_agent import ReasoningAgent
+from opendeepsearch.prompts import REACT_PROMPT
 
 from smolagents import (
     AgentError,
@@ -50,6 +52,12 @@ def parse_arguments():
         type=str,
         default="fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct",
         help="The model ID to use for the search tool (defaults to same as model-id)",
+    )
+    parser.add_argument(
+        "--reasoning-model-id",
+        type=str,
+        default="fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct",
+        help="The model ID to use for the reasoning agent (defaults to same as model-id)",
     )
     parser.add_argument(
         "--model-type",
@@ -120,29 +128,30 @@ def run_with_timeout(func, timeout):
             return "Timed Out"
 
 
-def answer_single_question(example, model, answers_file, action_type, search_model_id=None):
+def answer_single_question(example, model, answers_file, action_type, search_model_id=None, reasoning_model_id=None):
     if action_type == "vanilla":
         agent = model
     elif action_type == "codeact":
-        # agent = CodeAgent(
-        #     tools=[
-        #         OpenDeepSearchTool(
-        #             model_name=search_model_id or model.model_id,
-        #             search_provider='searxng',
-        #             # serper_api_key=args.serper_api_key,
-        #             searxng_instance_url='https://searxng.getlockinapp.com/',
-        #             # searxng_api_key=args.searxng_api_key
-        #         )
-        #     ],
-        #     model=model,
-        #     additional_authorized_imports=["numpy, web_search"],
-        #     max_steps=15,
-        # )
+        # Create a reasoning agent to generate a plan
+        reasoning_agent = ReasoningAgent(
+            model=reasoning_model_id,
+            temperature=0.2,
+            max_tokens=4096
+        )
+        
+        # Generate a plan for the query
+        plan = reasoning_agent.generate_plan(example["question"])
+        
+        # Format the query with the plan
+        augmented_question = reasoning_agent.format_query_with_plan(example["question"], plan)
+        
+        # Create the CodeAgent with the augmented question
         agent = CodeAgent(
             tools=[OpenDeepSearchTool(model_name=search_model_id or model.model_id)],
             model=model,
             additional_authorized_imports=["numpy"],
             max_steps=15,
+            # prompt_templates=REACT_PROMPT  # Use the system prompt string from REACT_PROMPT
         )
     elif action_type == "tool-calling":
         agent = ToolCallingAgent(
@@ -158,6 +167,7 @@ def answer_single_question(example, model, answers_file, action_type, search_mod
             model=model,
             additional_authorized_imports=["numpy"],
             max_steps=15,
+            system_prompt=REACT_PROMPT.system_prompt  # Use the system prompt string from REACT_PROMPT
         )
 
     augmented_question = example["question"]
@@ -211,6 +221,7 @@ def answer_questions(
     output_dir: str = "output",
     parallel_workers: int = 32,
     search_model_id: str = None,
+    reasoning_model_id: str = None,
     num_trials: int = 1,
 ):
     date = date or datetime.date.today().isoformat()
@@ -232,11 +243,12 @@ def answer_questions(
                     for line in f:
                         answered_questions.append(json.loads(line)["original_question"])
             examples_todo = [example for example in eval_ds[task] if example["question"] not in answered_questions]
+
             print(f"Launching {parallel_workers} parallel workers.")
 
             with ThreadPoolExecutor(max_workers=parallel_workers) as exe:
                 futures = [
-                    exe.submit(answer_single_question, example, model, file_name, action_type, search_model_id) 
+                    exe.submit(answer_single_question, example, model, file_name, action_type, search_model_id, reasoning_model_id) 
                     for example in examples_todo
                 ]
                 for f in tqdm(as_completed(futures), total=len(examples_todo), desc="Processing tasks"):
@@ -247,7 +259,6 @@ def answer_questions(
 
 if __name__ == "__main__":
     args = parse_arguments()
-
     eval_ds = load_eval_dataset(args.eval_tasks)
 
     if args.model_type == "LiteLLMModel":
@@ -267,5 +278,6 @@ if __name__ == "__main__":
         action_type=args.agent_action_type,
         parallel_workers=args.parallel_workers,
         search_model_id=args.search_model_id,
+        reasoning_model_id=args.reasoning_model_id,
         num_trials=args.num_trials,
     )

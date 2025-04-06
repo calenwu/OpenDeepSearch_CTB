@@ -186,7 +186,6 @@ class WebScraper:
             return extraction_result
 
         except Exception as e:
-            print("ERROR AMK", e)
             if self.debug:
                 import traceback
                 print(f"Debug: Exception occurred during extraction:")

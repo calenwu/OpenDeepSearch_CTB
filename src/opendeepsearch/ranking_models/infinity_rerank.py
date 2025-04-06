@@ -41,8 +41,8 @@ class InfinitySemanticSearcher(BaseSemanticSearcher):
     
     def __init__(
         self, 
-        embedding_endpoint: str = "http://localhost:7997/embeddings",
-        model_name: str = "Alibaba-NLP/gte-Qwen2-7B-instruct",
+        embedding_endpoint: str = "http://81.166.173.12:11604/embeddings",
+        model_name: str = "mixedbread-ai/mxbai-embed-large-v1",
         instruction_prefix: str = "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: "
     ):
         """
@@ -83,4 +83,5 @@ class InfinitySemanticSearcher(BaseSemanticSearcher):
         
         content_str = response.content.decode('utf-8')
         content_json = json.loads(content_str)
+        # print(content_json, "CONTENT JSON HERE")
         return torch.tensor([item['embedding'] for item in content_json['data']])
