@@ -1,5 +1,6 @@
 from smolagents import CodeAgent, GradioUI, LiteLLMModel
 from opendeepsearch import OpenDeepSearchTool, EnhancedOpenDeepSearchTool
+from smolagents.agents import PromptTemplates 
 import os
 from dotenv import load_dotenv, dotenv_values
 import argparse
@@ -66,7 +67,7 @@ search_tool = EnhancedOpenDeepSearchTool(
     reranker=args.reranker,
     search_provider=args.search_provider,
     serper_api_key=args.serper_api_key,
-    searxng_instance_url='https://searxng.getlockinapp.com',
+    searxng_instance_url='http://46.101.221.72:8080',
     searxng_api_key=args.searxng_api_key
 )
 print("LLAMA_3_3 =", LLAMA_3_3)
@@ -83,7 +84,21 @@ model = LiteLLMModel(
 )
 
 # Initialize the agent with the search tool
-agent = CodeAgent(tools=[search_tool], model=model)
+custom_prompt = PromptTemplates(
+    system_prompt="""
+You are an agent with a lot of basic knowledge, but you must double-check it. Do not make assumptions.
+You have to be very specific in your answers.
 
+You have a tool called `websearch` in your toolbox — please use it if needed. For example, if asked about the most common ingredient in Red Bull, do a web search and retrieve the exact information from the web.
+
+Even if you think you know the answer, it's better to double-check. Be specific and avoid being generic.
+"""
+)
+
+agent = CodeAgent(
+    tools=[search_tool],
+    model=model,
+    # prompt_templates=custom_prompt
+)
 # Add a name when initializing GradioUI
 GradioUI(agent).launch(server_name="127.0.0.1", server_port=args.server_port, share=False)

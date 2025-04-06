@@ -62,9 +62,8 @@ docker run -it --gpus all \
  --model-id michaelfeil/bge-small-en-v1.5 \
  --port 7997
 
-python ./evals/eval_tasks.py --parallel-workers=64 --num-trials=1 --eval-tasks=./evals/datasets/frames_test_set.csv
+python ./evals/eval_tasks.py --parallel-workers=32 --num-trials=1 --eval-tasks=./evals/datasets/frames_test_set.csv
 
-`wc -l '/Users/georgye/Documents/repos/OpenDeepSearch_CTB/output/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct/codeact/frames_test_set/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct__codeact__frames_test_set__trial0.jsonl'
-     650 /Users/georgye/Documents/repos/OpenDeepSearch_CTB/output/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct/codeact/frames_test_set/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct__codeact__frames_test_set__trial0.jsonl`
+`wc -l '/Users/georgye/Documents/repos/OpenDeepSearch_CTB/output/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct/codeact/frames_test_set/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct__codeact__frames_test_set__trial0.jsonl'`
 
 `python evals/autograde_df.py --num_cpus 25 /Users/georgye/Documents/repos/OpenDeepSearch_CTB/output/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct/codeact/frames_test_set/fireworks_ai__accounts__fireworks__models__llama-v3p3-70b-instruct__codeact__frames_test_set__trial0_copy.jsonl`

@@ -79,104 +79,56 @@ class EnhancedOpenDeepSearchTool(Tool):
         self.searxng_api_key = searxng_api_key
 
     def forward(self, query: str):
-        max_retries = 3
-        retries = 0
-        # Preserve the full original question for use in every iteration.
+        # Perform the search using the improved query.
+        answer_response = self.search_tool.ask_sync(query, max_sources=2, pro_mode=True)
         
-        while retries < max_retries:
-            # Perform the search using the improved query.
-            answer_response = self.search_tool.ask_sync(query, max_sources=2, pro_mode=True)
+        # Generate a concise answer from the search response.
+        augmented_query_completion = completion(
+            model=self.search_model_name,
+            messages=[
+                {"role": "user", "content": f"Given the query: {query} find an alternative query that might give a more detailed answer."}
+            ],
+            temperature=0.2,
+            top_p=0.3
+        )
+        augmented_query = augmented_query_completion.choices[0].message.content
+        answer_response_2 = self.search_tool.ask_sync(augmented_query, max_sources=2, pro_mode=True)
 
-            # Generate a concise answer from the search response.
-            concise_response_completion = completion(
-                model=self.search_model_name,
-                messages=[
-                    {"role": "user", "content": f"Given the query: {query}, and the answer: {answer_response}, make the answer as concise as possible but still answer the question. "}
-                ],
-                temperature=0.2,
-                top_p=0.3
-            )
-            answer = concise_response_completion.choices[0].message.content
+        # Generate a concise answer from the search response.
+        concise_response_completion = completion(
+            model=self.search_model_name,
+            messages=[
+                {"role": "user", "content": f"Given the query: {query}, and the answer: {answer_response}, make the answer as concise as possible but still answer the question. "}
+            ],
+            temperature=0.2,
+            top_p=0.3
+        )
+        answer = concise_response_completion.choices[0].message.content
+        # Generate a concise answer from the search response.
+        concise_response_completion_2 = completion(
+            model=self.search_model_name,
+            messages=[
+                {"role": "user", "content": f"Given the query: {augmented_query}, and the answer: {answer_response_2}, make the answer as concise as possible but still answer the question. "}
+            ],
+            temperature=0.2,
+            top_p=0.3
+        )
+        answer_2 = concise_response_completion_2.choices[0].message.content
 
-            print(f"query: {query}, answer: {answer}")
+        print(f"query: {query}, answer: {answer}")
+        print(f"query: {augmented_query}, answer: {answer_2}")
 
-            # If we've hit the maximum number of retries, return the final answer.
-            if retries == max_retries - 1:
-                return answer
-
-            try:
-                # Evaluate if the current answer is adequate or if a better search query is needed.
-                evaluation_response = completion(
-                    model=self.search_model_name,
-                    messages=[
-                        {
-                            "role": "system", 
-                            "content": (
-                                f"Evaluate if the answer adequately addresses the question. If not, provide a better search query that might yield a more relevant answer. "
-                                f"This result should get us closer to answering '{query}'. "
-                                "Return a JSON with two fields: 'retry' (boolean) and either 'search_for' (string with improved search query if retry is true) or 'answer' (string with the answer if retry is false with a concise answer which answers the query)."
-                            )
-                        },
-                        {"role": "user", "content": f"Question: {query}\nAnswer: {answer}"}
-                    ],
-                    temperature=0.2,
-                    top_p=0.3
-                )
-                print(f"DEBUG for testing: {evaluation_response.choices[0].message.content}")
-
-                # Parse the evaluation JSON response.
-                try:
-                    evaluation_json = json.loads(evaluation_response.choices[0].message.content)
-                except json.JSONDecodeError as e:
-                    print(evaluation_response.choices[0].message.content)
-                    print(f"JSON Decode Error: {e}")
-                    # Make a second LLM call to extract the JSON from the response.
-                    # The LLM is instructed to extract only the JSON portion.
-                    extraction_response = completion(
-                        model=self.search_model_name,
-                        messages=[
-                            {
-                                "role": "system",
-                                "content": (
-                                    "The following text contains a JSON response embedded within additional commentary. "
-                                    "Extract and return only the JSON part nothing else!"
-                                )
-                            },
-                            {
-                                "role": "user",
-                                "content": evaluation_response.choices[0].message.content
-                            }
-                        ],
-                        temperature=0.2,
-                        top_p=0.3
-                    )
-                    try:
-                        raw_string = extraction_response.choices[0].message.content.replace("```", '').replace("json\n", '').replace('\n', '')
-                        
-
-                        # Step 2: Decode the escaped characters (like \n, \")
-                        decoded = raw_string.encode().decode('unicode_escape')
-                        # Step 3: Load as JSON
-                        evaluation_json = json.loads(decoded)
-                        # evaluation_json = json.loads(extraction_response.choices[0].message.content.replace('json\n'))
-                    except Exception as ex:
-                        print(f"Second extraction failed: {ex}")
-                        raise ex
-                    if evaluation_json.get('retry', False):
-                        # Update the query for the next iteration.
-                        new_query = evaluation_json.get('search_for', query)
-                        query = new_query
-                        retries += 1
-                        continue
-                    else:
-                        # If no retry is needed, return the current answer.
-                        return evaluation_json.get('answer', answer)
-            except Exception as e:
-                print(f"Error: {e}")
-                raise e
-
+        final_answer_completion = completion(
+            model=self.search_model_name,
+            messages=[
+                {"role": "user", "content": f"Given the query: {query}, and the answers: {answer_response} and {answer_response_2} find a final answer that is the most accurate and expansive."}
+            ],
+            temperature=0.2,
+            top_p=0.3
+        )
+        final_answer = final_answer_completion.choices[0].message.content
         # Fallback return (ideally should not reach here).
-        return answer
+        return final_answer
 
     def setup(self):
         self.search_tool = OpenDeepSearchAgent(
