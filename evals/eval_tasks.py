@@ -56,8 +56,8 @@ def parse_arguments():
     parser.add_argument(
         "--reasoning-model-id",
         type=str,
-        default="fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct",
-        help="The model ID to use for the reasoning agent (defaults to same as model-id)",
+        default=None, #"fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct",
+        help="The model ID to use for the reasoning agent (optional, only used with codeact action type)",
     )
     parser.add_argument(
         "--model-type",
@@ -132,18 +132,23 @@ def answer_single_question(example, model, answers_file, action_type, search_mod
     if action_type == "vanilla":
         agent = model
     elif action_type == "codeact":
-        # Create a reasoning agent to generate a plan
-        reasoning_agent = ReasoningAgent(
-            model=reasoning_model_id,
-            temperature=0.2,
-            max_tokens=4096
-        )
-        
-        # Generate a plan for the query
-        plan = reasoning_agent.generate_plan(example["question"])
-        
-        # Format the query with the plan
-        augmented_question = reasoning_agent.format_query_with_plan(example["question"], plan)
+        # Only use reasoning agent if reasoning_model_id is provided
+        if reasoning_model_id:
+            # Create a reasoning agent to generate a plan
+            reasoning_agent = ReasoningAgent(
+                model=reasoning_model_id,
+                temperature=0.2,
+                max_tokens=4096
+            )
+            
+            # Generate a plan for the query
+            plan = reasoning_agent.generate_plan(example["question"])
+            
+            # Format the query with the plan
+            augmented_question = reasoning_agent.format_query_with_plan(example["question"], plan)
+        else:
+            # If no reasoning model is provided, use the original question
+            augmented_question = example["question"]
         
         # Create the CodeAgent with the augmented question
         agent = CodeAgent(
@@ -170,9 +175,12 @@ def answer_single_question(example, model, answers_file, action_type, search_mod
             system_prompt=REACT_PROMPT.system_prompt  # Use the system prompt string from REACT_PROMPT
         )
 
-    augmented_question = example["question"]
+    # For vanilla and tool-calling, use the original question
+    if action_type != "codeact":
+        augmented_question = example["question"]
+        
     start_time = time.time()
-    TIMEOUT_SECONDS = 300  # 5 minutes timeout
+    TIMEOUT_SECONDS = 180  # 3 minutes timeout
 
     try:
         if action_type == "vanilla":

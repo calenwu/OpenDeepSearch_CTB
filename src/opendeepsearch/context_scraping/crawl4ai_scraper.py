@@ -26,7 +26,7 @@ class WebScraper:
         user_query: Optional[str] = None,
         debug: bool = False,
         filter_content: bool = False
-    ):
+    ):  
         self.browser_config = browser_config or BrowserConfig(headless=True, verbose=True)
         self.debug = debug
         self.factory = StrategyFactory()
@@ -86,7 +86,6 @@ class WebScraper:
                 if self.debug:
                     print(f"Debug: Wikipedia extraction failed: {str(e)}")
                 # If Wikipedia extraction fails, fall through to normal scraping
-        
         # Normal scraping for non-Wikipedia URLs or if Wikipedia extraction failed
         results = {}
         for strategy_name in self.strategies:
@@ -96,7 +95,6 @@ class WebScraper:
             )
             result = await self.extract(config, url)
             results[strategy_name] = result
-            
         return results
     
     async def scrape_many(self, urls: List[str]) -> Dict[str, Dict[str, ExtractionResult]]:
@@ -125,7 +123,7 @@ class WebScraper:
         """Internal method to perform extraction using specified strategy"""
         try:
             config = self._create_crawler_config()
-            config.extraction_strategy = extraction_config.strategy
+            config.extraction_strategy = extraction_config.strategy           
 
             if self.debug:
                 print(f"\nDebug: Attempting extraction with strategy: {extraction_config.name}")

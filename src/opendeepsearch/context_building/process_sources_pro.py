@@ -15,7 +15,7 @@ class SourceProcessor:
     def __init__(
         self, 
         top_results: int = 5,
-        strategies: List[str] = ["no_extraction"],
+        strategies: List[str] = ["markdown_llm"],
         filter_content: bool = True,
         reranker: str = "infinity"
     ):
@@ -68,7 +68,8 @@ class SourceProcessor:
 
     async def _fetch_html_contents(self, links: List[str]) -> List[str]:
         raw_contents = await self.scraper.scrape_many(links)
-        return [x['no_extraction'].content for x in raw_contents.values()]
+        print(raw_contents, "RAWWWWW")
+        return [x['fit_markdown_llm'].content for x in raw_contents.values()]
 
     def _process_html_content(self, html: str, query: str) -> str:
         if not html:

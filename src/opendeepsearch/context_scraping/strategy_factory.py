@@ -4,6 +4,7 @@ Contains the StrategyFactory class for creating various extraction strategies.
 
 import os
 from typing import Optional
+from crawl4ai import LLMConfig
 
 from crawl4ai.extraction_strategy import (
     LLMExtractionStrategy,
@@ -21,9 +22,7 @@ class StrategyFactory:
         instruction: str = "Extract relevant content from the provided text, only return the text, no markdown formatting, remove all footnotes, citations, and other metadata and only keep the main content",
     ) -> LLMExtractionStrategy:
         return LLMExtractionStrategy(
-            input_format=input_format,
-            provider="openrouter/google/gemini-2.0-flash-lite-001",  # Uses LiteLLM as provider
-            api_token=os.getenv("OPENROUTER_API_KEY"),
+            llm_config = LLMConfig(provider="fireworks_ai/accounts/fireworks/models/llama-v3p3-70b-instruct",api_token="fw_3Zmbrh5gP15DpyniGCA8s5UH"),
             instruction=instruction
         )
 
